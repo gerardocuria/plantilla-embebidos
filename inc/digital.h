@@ -8,7 +8,7 @@
 typedef struct digital_output_s * digital_output_t;
 typedef struct digital_input_s * digital_input_t;
 
-digital_input_t DigitalInputCreate(uint8_t port,uint8_t pin);
+digital_input_t DigitalInputCreate(uint8_t port,uint8_t pin, bool logic);
 
 
 bool DigitalInputGetState(digital_input_t input);

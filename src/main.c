@@ -60,6 +60,8 @@
 
 /* === Public function implementation ========================================================= */
 
+
+
 int main(void) {
     /*digital_output_t led_azul;
     digital_output_t led_rojo;
@@ -74,49 +76,41 @@ int main(void) {
     board_t board=BoardCreate();
 
     int divisor = 0;
-    bool current_state, last_state = false;
+    //bool current_state, last_state = false;
+
+/* === End of documentation ==================================================================== */
+
+/** @} End of module definition for doxygen */
 
 
     while (true) {
-
-        if (DigitalInputGetState(board->boton_prueba)) {
+        if (DigitalInputGetState(board->boton_prueba) == true) {
             DigitalOutputActivate(board->led_azul);
-           /* Chip_GPIO_SetPinState(LPC_GPIO_PORT, LED_B_GPIO, LED_B_BIT, true);*/
         } else {
-            /*Chip_GPIO_SetPinState(LPC_GPIO_PORT, LED_B_GPIO, LED_B_BIT, false);*/
             DigitalOutputDesactivate(board->led_azul);
         }
 
-        current_state = DigitalInputGetState(board->boton_cambiar);
-        if ((current_state) && (!last_state)) {
-            /*Chip_GPIO_SetPinToggle(LPC_GPIO_PORT, LED_1_GPIO, LED_1_BIT);*/
+        if (DigitalInputHasActivated(board->boton_cambiar)) {
             DigitalOutputToggle(board->led_rojo);
         }
-        last_state = current_state;
 
-        if (DigitalInputGetState(board->boton_prender)) {
-            /*Chip_GPIO_SetPinState(LPC_GPIO_PORT, LED_2_GPIO, LED_2_BIT, true);*/
+        if (DigitalInputGetState(board->boton_prender) == true) {
             DigitalOutputActivate(board->led_amarillo);
         }
-        if (DigitalInputGetState(board->boton_apagar)) {
-            /*Chip_GPIO_SetPinState(LPC_GPIO_PORT, LED_2_GPIO, LED_2_BIT, false);*/
+        if (DigitalInputGetState(board->boton_apagar) == true) {
             DigitalOutputDesactivate(board->led_amarillo);
         }
 
         divisor++;
-        if (divisor == 5) {
+        if (divisor == 25) {
             divisor = 0;
             DigitalOutputToggle(board->led_verde);
         }
 
         for (int index = 0; index < 100; index++) {
-            for (int delay = 0; delay < 25000; delay++) {
+            for (int delay = 0; delay < 5000; delay++) {
                 __asm("NOP");
             }
         }
     }
 }
-
-/* === End of documentation ==================================================================== */
-
-/** @} End of module definition for doxygen */

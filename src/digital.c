@@ -17,6 +17,7 @@ struct  digital_input_s {
     uint8_t pin;
     bool inverted;
     bool allocated:1;
+    bool last_state:1;
 };
 
 
@@ -30,9 +31,6 @@ struct  digital_output_s {
 digital_input_t DigitalInputAllocate(void);
 
 digital_output_t DigitalOutputAllocate(void);
-
-
-
 
 digital_input_t DigitalInputAllocate(void){
     digital_input_t input = NULL;
@@ -76,13 +74,14 @@ digital_output_t DigitalOutputAllocate(void){
 
 
 
-digital_input_t DigitalInputCreate(uint8_t port,uint8_t pin){
+digital_input_t DigitalInputCreate(uint8_t port,uint8_t pin,bool logic){
     digital_input_t input = DigitalInputAllocate();
 
     if(input){
         input->port = port;
         input->pin = pin;
-        Chip_GPIO_SetPinDIR(LPC_GPIO_PORT, input->port,input->pin, true);
+        input->inverted = logic;
+        Chip_GPIO_SetPinDIR(LPC_GPIO_PORT, input->port,input->pin, false);
     }
     return input;
 }
@@ -93,18 +92,33 @@ bool DigitalInputGetState(digital_input_t input){
     return input->inverted ^ Chip_GPIO_ReadPortBit(LPC_GPIO_PORT, input->port,input->pin);
 }
 
-bool DigitalInputHasChanged(digital_input_t input){
-    return false;
+bool DigitalInputHasChange(digital_input_t input){
+        bool current_state = DigitalInputGetState(input);
+    bool has_changed = false;
+
+    if (current_state == !(input->last_state)) has_changed = true;
+    input->last_state = current_state;
+    return has_changed;
 }
 
 bool DigitalInputHasActivated(digital_input_t input){
-    return false;
+    bool current_state = DigitalInputGetState(input);
+    bool has_activated = false;
+
+    if (current_state == true && input->last_state == false) has_activated = true;
+    input->last_state = current_state;
+    return has_activated;
 }
+
 
 bool DigitalInputHasDesactivated(digital_input_t input){
-    return false;
-}
+    bool current_state = DigitalInputGetState(input);
+    bool has_deactivated = false;
 
+    if (current_state == false && input->last_state == true) has_deactivated = true;
+    input->last_state = current_state;
+    return has_deactivated;
+}
 
 
 
